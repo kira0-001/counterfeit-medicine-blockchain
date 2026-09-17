@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Transactions from '../../build/Transactions.json';
 import RawMaterial from '../../build/RawMaterial.json';
-import {NavLink, withRouter, BrowserRouter as Router, Route} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AddRawMaterial(props) {
   const [account] = useState(props.account);
-  const [web3, setWeb3] = useState(props.web3);
+  const [web3] = useState(props.web3);
   const [transporterAddress, setTransporterAddress] = useState("");
   // const [manufacturerAddress, setManufacturerAddress] = useState("");
   const [supplyChain] = useState(props.supplyChain);
@@ -40,10 +40,7 @@ export default function AddRawMaterial(props) {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
 
-  console.log([account]);
-  console.log("Supp SupplyChain");
-  console.log([supplyChain]); 
-  
+
   const classes = useStyles();
 
   const handleInputChange = (e) => {
@@ -75,7 +72,7 @@ export default function AddRawMaterial(props) {
   }
 
   return (
-    <Grid container style={{ backgroundColor: "white", display: "center", alignItems: "center", maxWidth: 400, justify: "center"}}>
+    <Grid container style={{ display: "flex", flexDirection: "column", maxWidth: 560 }}>
         <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>

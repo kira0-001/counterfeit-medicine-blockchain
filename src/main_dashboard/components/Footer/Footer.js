@@ -41,15 +41,11 @@ export default function Footer(props) {
         </div>
         <p className={classes.right}>
           <span>
-            &copy; {1900 + new Date().getYear()}{" "}
-            <a
-              href="https://www.creative-tim.com?ref=mdr-footer"
-              target="_blank"
-              className={classes.a}
-            >
-              Creative Tim
+            &copy; {new Date().getFullYear()}{" "}
+            <a href="/" className={classes.a}>
+              PharmaChain DApp
             </a>
-            , made with love for a better web
+            , Decentralized Medicine Authentication Platform
           </span>
         </p>
       </div>

@@ -1,214 +1,33 @@
-// import React, { Component } from 'react';
-
-// function Owner(props) {
-
-//     return (
-//         <h1>Welcome Owner</h1>
-//     );
-
-// }
-
-// export default Owner;
-
-// import React, {useState} from 'react';
-// import PropTypes from 'prop-types';
-// import AppBar from '@material-ui/core/AppBar';
-// import CssBaseline from '@material-ui/core/CssBaseline';
-// import Divider from '@material-ui/core/Divider';
-// import Drawer from '@material-ui/core/Drawer';
-// import Hidden from '@material-ui/core/Hidden';
-// import IconButton from '@material-ui/core/IconButton';
-// import List from '@material-ui/core/List';
-// import ListItem from '@material-ui/core/ListItem';
-// import ListItemIcon from '@material-ui/core/ListItemIcon';
-// import ListItemText from '@material-ui/core/ListItemText';
-// import MailIcon from '@material-ui/icons/Mail';
-// import MenuIcon from '@material-ui/icons/Menu';
-// import Toolbar from '@material-ui/core/Toolbar';
-// import Typography from '@material-ui/core/Typography';
-// import { makeStyles, useTheme } from '@material-ui/core/styles';
-// import PersonAddIcon from '@material-ui/icons/PersonAdd';
-// import PersonIcon from '@material-ui/icons/Person';
-// import Button from '@material-ui/core/Button';
-// import SampleImage from '../../components/images/sc1.jpg';
-// const drawerWidth = 240;
-
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     display: 'flex',
-//   },
-//   drawer: {
-//     [theme.breakpoints.up('sm')]: {
-//       width: drawerWidth,
-//       flexShrink: 0,
-//     },
-//   },
-//   appBar: {
-//     [theme.breakpoints.up('sm')]: {
-//       width: `calc(100% - ${drawerWidth}px)`,
-//       marginLeft: drawerWidth,
-//     },
-//   },
-//   menuButton: {
-//     marginRight: theme.spacing(2),
-//     [theme.breakpoints.up('sm')]: {
-//       display: 'none',
-//     },
-//   },
-//   // necessary for content to be below app bar
-//   toolbar: theme.mixins.toolbar,
-//   drawerPaper: {
-//     width: drawerWidth,
-//   },
-//   content: {
-//     flexGrow: 1,
-//     padding: theme.spacing(3),
-//   },
-// }));
-
-// function Owner(props) {
-//   const { window } = props;
-//   const classes = useStyles();
-//   const theme = useTheme();
-//   const [mobileOpen, setMobileOpen] = React.useState(false);
-
-//   const handleDrawerToggle = () => {
-//     setMobileOpen(!mobileOpen);
-//   };
-
-//   const drawer = (
-//     <div>
-//       <div className={classes.toolbar} />
-//       <Divider />
-//       <List>
-//         {['Add-New-User', 'View-User'].map((text, index) => (
-//           <ListItem button key={text}>
-//             <ListItemIcon>{index % 2 === 0 ?
-//               <div>
-//                 <PersonAddIcon/>
-//                 <Button href= "/owner/add-new-user" color="inherit">{text}</Button>
-//               </div>
-//             :
-//             <div>
-//                 <PersonIcon/>
-//                 <Button href= "/owner/view-user" color="inherit">{text}</Button>
-//             </div>
-//             }
-//             </ListItemIcon>
-//           </ListItem>
-//         ))}
-//       </List>
-//       {/* <Divider /> */}
-
-//     </div>
-//   );
-
-//   const container = window !== undefined ? () => window().document.body : undefined;
-
-//   return (
-//     <div className={classes.root}>
-//       <CssBaseline />
-//       <AppBar position="fixed" className={classes.appBar}>
-//         <Toolbar style={{ background:'cadetblue'}}>
-//           <IconButton
-//             color="inherit"
-//             aria-label="open drawer"
-//             edge="start"
-//             onClick={handleDrawerToggle}
-//             className={classes.menuButton}
-//           >
-//             <MenuIcon />
-//           </IconButton>
-//           <Typography variant="h6" noWrap >
-//             Welcome Owner
-//           </Typography>
-//         </Toolbar>
-//       </AppBar>
-//       <nav className={classes.drawer} aria-label="mailbox folders">
-//         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-//         <Hidden smUp implementation="css">
-//           <Drawer
-//             container={container}
-//             variant="temporary"
-//             anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-//             open={mobileOpen}
-//             onClose={handleDrawerToggle}
-//             classes={{
-//               paper: classes.drawerPaper,
-//             }}
-//             ModalProps={{
-//               keepMounted: true, // Better open performance on mobile.
-//             }}
-//           >
-//             {drawer}
-//           </Drawer>
-//         </Hidden>
-//         <Hidden xsDown implementation="css">
-//           <Drawer
-//             classes={{
-//               paper: classes.drawerPaper,
-//             }}
-//             variant="permanent"
-//             open
-//           >
-//             {drawer}
-//           </Drawer>
-//         </Hidden>
-//       </nav>
-//       <main className={classes.content} style={{ backgroundImage: `url(${SampleImage})` ,backgroundPosition: 'center',
-//         backgroundRepeat: 'no-repeat', height: '850px', backgroundSize: 'contain'
-//     }}>
-//         <div className={classes.toolbar} />
-//       </main>
-//     </div>
-//   );
-// }
-
-// Owner.propTypes = {
-//   window: PropTypes.func,
-// };
-
-// export default Owner;
-//********************************* */
-
-////////////////////////////////////
-
-import React, { useState } from "react";
+import React from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import PerfectScrollbar from "perfect-scrollbar";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
-// @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
-// core components
 import Navbar from "../../main_dashboard/components/Navbars/Navbar";
 import Sidebar from "../../main_dashboard/components/Sidebar/Sidebar.js";
-
 import styles from "../../main_dashboard/assets/jss/material-dashboard-react/layouts/adminStyle.js";
 import bgImage from "../../main_dashboard/assets/img/sidebar-2.jpg";
+import mainBgImage from "../../components/images/admin.jpg";
 import logo from "../../main_dashboard/assets/img/reactlogo.png";
-
-import Dashboard from "@material-ui/icons/Dashboard";
-import Person from "@material-ui/icons/Person";
-import LocationOn from "@material-ui/icons/LocationOn";
 import AddItem from "@material-ui/icons/AddBox";
 import ViewItem from "@material-ui/icons/ViewList";
-import ViewTrans from "@material-ui/icons/Visibility";
-
 import AddNewUser from "./AddNewUser";
 import ViewUser from "./ViewUser";
-import OwnerDashboard from "../../main_dashboard/views/Dashboard/Dashboard";
-import UserProfile from "../../main_dashboard/views/UserProfile/UserProfile";
-import Maps from "../../main_dashboard/views/Maps/Maps.js";
-// import routes from './ownerRoutes.js';
-
-import PropTypes from "prop-types";
+import OwnerDashboard from "./OwnerDashboard";
+import DashboardIcon from "@material-ui/icons/Dashboard";
 
 let ps;
 
 const routes = [
   {
+    path: "/dashboard",
+    name: "Analytics Dashboard",
+    icon: DashboardIcon,
+    component: OwnerDashboard,
+    layout: "/owner",
+  },
+  {
     path: "/add-new-user",
-    // href: "/owner/add-new-user",
     name: "Add New User",
     icon: AddItem,
     component: AddNewUser,
@@ -251,23 +70,9 @@ export default function Owner({ ...rest }) {
   );
   const classes = useStyles();
   const mainPanel = React.createRef();
-  const [image, setImage] = React.useState(bgImage);
-  const [color, setColor] = React.useState("blue");
-  const [fixedClasses, setFixedClasses] = React.useState("dropdown show");
+  const image = bgImage;
+  const color = "blue";
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const handleImageClick = (image) => {
-    setImage(image);
-  };
-  const handleColorClick = (color) => {
-    setColor(color);
-  };
-  const handleFixedClick = () => {
-    if (fixedClasses === "dropdown") {
-      setFixedClasses("dropdown show");
-    } else {
-      setFixedClasses("dropdown");
-    }
-  };
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -293,6 +98,7 @@ export default function Owner({ ...rest }) {
     return function cleanup() {
       if (navigator.platform.indexOf("Win") > -1) {
         ps.destroy();
+        document.body.style.overflow = "auto";
       }
       window.removeEventListener("resize", resizeFunction);
     };
@@ -310,7 +116,7 @@ export default function Owner({ ...rest }) {
         color={color}
         {...rest}
       />
-      <div className={classes.mainPanel} ref={mainPanel}>
+      <div className={classes.mainPanel} ref={mainPanel} style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9)), url(${mainBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
         <Navbar
           routes={routes}
           handleDrawerToggle={handleDrawerToggle}
@@ -324,7 +130,6 @@ export default function Owner({ ...rest }) {
         ) : (
           <div className={classes.map}>{switchRoutes}</div>
         )}
-        {/* {switchRoutes} */}
       </div>
     </div>
   );

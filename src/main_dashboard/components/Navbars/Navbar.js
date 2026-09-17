@@ -13,6 +13,8 @@ import Menu from "@material-ui/icons/Menu";
 import AdminNavbarLinks from "./AdminNavbarLinks.js";
 import RTLNavbarLinks from "./RTLNavbarLinks.js";
 import Button from "../CustomButtons/Button.js";
+import HomeIcon from "@material-ui/icons/Home";
+import { Link } from "react-router-dom";
 
 import styles from "../../assets/jss/material-dashboard-react/components/headerStyle.js";
 
@@ -40,9 +42,17 @@ export default function Header(props) {
         <div className={classes.flex}>
           {/* Here we create navbar brand, based on route name */}
           <Button color="transparent" href="#" className={classes.title}>
-            {makeBrand()}
+            {makeBrand() || "Dashboard"}
           </Button>
         </div>
+        <Button
+          component={Link}
+          to="/"
+          color="transparent"
+          style={{ color: '#94a3b8', fontSize: '0.82rem', textTransform: 'none', display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 12px', minWidth: 'unset' }}
+        >
+          <HomeIcon style={{ fontSize: '18px' }} /> Home
+        </Button>
         <Hidden smDown implementation="css">
           {props.rtlActive ? <RTLNavbarLinks /> : <AdminNavbarLinks />}
         </Hidden>

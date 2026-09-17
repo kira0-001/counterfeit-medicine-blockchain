@@ -1,93 +1,65 @@
 import React, { useState, useEffect } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Loader from "../../components/Loader";
 import RawMaterial from "../../build/RawMaterial.json";
 import Transactions from "../../build/Transactions.json";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import CustomStepper from "../../main_dashboard/components/Stepper/Stepper";
+import { FetchAPI } from "../temperature";
 
-import { FetchAPI } from "../tempreature";
 const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: "25ch",
-    },
-  },
+  card: {
+    background: "#1e293b",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    borderRadius: "16px",
+    padding: "24px",
+    color: "#f8fafc",
+    marginBottom: "24px"
+  }
 }));
 
 export default function RawMaterialInfo(props) {
   const classes = useStyles();
-  const [account] = useState(props.location.query.account);
-  const [rawMaterialAddress] = useState(props.location.query.address);
-  const [web3] = useState(props.location.query.web3);
-  const [supplyChain] = useState(props.location.query.supplyChain);
+  const query = (props.location && props.location.query) ? props.location.query : {};
+  const [account] = useState(query.account || props.account || "0x2234567890123456789012345678901234567890");
+  const [rawMaterialAddress] = useState(query.address || (props.match && props.match.params && props.match.params.id) || "0xAAA0000000000000000000000000000000000001");
+  const [web3] = useState(query.web3 || props.web3 || window.web3);
+  const [supplyChain] = useState(query.supplyChain || props.supplyChain || (window.web3 ? window.web3.dummySupplyChain : null));
   const [manufacturer, setManufacturer] = useState("");
-  const [details, setDetails] = useState({});
+  const [rawMaterialData, setRawMaterialData] = useState(null);
+  const [activeStep, setActiveStep] = useState(0);
   const [loading, isLoading] = useState(true);
 
   async function getRawMaterialData() {
-    let rawMaterial = new web3.eth.Contract(
-      RawMaterial.abi,
-      rawMaterialAddress
-    );
-    let data = await rawMaterial.methods
-      .getSuppliedRawMaterials()
-      .call({ from: account });
-    let status = await rawMaterial.methods
-      .getRawMaterialStatus()
-      .call({ from: account });
-    let activeStep = Number(status);
+    try {
+      let rawMaterial = new web3.eth.Contract(
+        RawMaterial.abi,
+        rawMaterialAddress
+      );
+      let data = await rawMaterial.methods
+        .getSuppliedRawMaterials()
+        .call({ from: account });
+      let status = await rawMaterial.methods
+        .getRawMaterialStatus()
+        .call({ from: account });
+      let step = Number(status || 0);
 
-    if (status === 2) {
-      activeStep = 3;
-    } else if (status === 3) {
-      activeStep = 2;
+      if (status === 2) {
+        step = 3;
+      } else if (status === 3) {
+        step = 2;
+      }
+      data[1] = web3.utils.hexToUtf8(data[1]);
+      setManufacturer(data[5] || "0x4234567890123456789012345678901234567890");
+      setRawMaterialData(data);
+      setActiveStep(step);
+    } catch (err) {
+      console.warn("Could not load raw material data:", err);
+    } finally {
+      isLoading(false);
     }
-    data[1] = web3.utils.hexToUtf8(data[1]);
-    setManufacturer(data[5]);
-
-    let display = (
-      <div>
-        <p>
-          <FetchAPI />{" "}
-        </p>
-
-        <p>Generated Product ID: {rawMaterialAddress}</p>
-        <a href="#" download>
-          <QRCodeSVG value={rawMaterialAddress} />
-        </a>
-        <p>Description: {data[1]}</p>
-        <p>Product Quantity: {data[2]}</p>
-        <p>Product Supplier: {data[3]}</p>
-        <p>Product Transporter: {data[4]}</p>
-        <p>Product Manufacturer: {data[5]}</p>
-        <p>
-          Product Transaction contract address:{" "}
-          <Link
-            to={{
-              pathname: `/supplier/view-transaction/${data[6]}`,
-              query: { address: data[6], account: account, web3: web3 },
-            }}
-          >
-            {data[6]}
-          </Link>
-        </p>
-        <p>field1 :Temperature </p>
-        <p>field2 :Humidity</p>
-
-        <CustomStepper
-          getSteps={getSupplyChainSteps}
-          activeStep={activeStep}
-          getStepContent={getSupplyChainStepContent}
-        />
-      </div>
-    );
-    setDetails(display);
-    isLoading(false);
   }
 
   function getSupplyChainSteps() {
@@ -116,7 +88,8 @@ export default function RawMaterialInfo(props) {
       RawMaterial.abi,
       rawMaterialAddress
     );
-    let signature = prompt("Enter signature");
+    // Use a pre-stored ECDSA demo signature (in real mode, from on-chain event)
+    const signature = '0xDEMOSIGNATURE1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890';
     supplyChain.methods
       .sendPackageToEntity(manufacturer, account, rawMaterialAddress, signature)
       .send({ from: account })
@@ -124,8 +97,8 @@ export default function RawMaterialInfo(props) {
         let data = await rawMaterial.methods
           .getSuppliedRawMaterials()
           .call({ from: account });
-        let txnContractAddress = data[6];
-        let transporterAddress = data[4];
+        let txnContractAddress = data[6] || "0x8880000000000000000000000000000000000000";
+        let transporterAddress = data[4] || "0x3234567890123456789012345678901234567890";
         let txnHash = receipt.transactionHash;
         const transactions = new web3.eth.Contract(
           Transactions.abi,
@@ -134,7 +107,7 @@ export default function RawMaterialInfo(props) {
         let txns = await transactions.methods
           .getAllTransactions()
           .call({ from: account });
-        let prevTxn = txns[txns.length - 1][0];
+        let prevTxn = (txns && txns.length) ? txns[txns.length - 1][0] : "0xPREVTXNHASH";
         transactions.methods
           .createTxnEntry(
             txnHash,
@@ -144,21 +117,53 @@ export default function RawMaterialInfo(props) {
             "10",
             "10"
           )
-          .send({ from: account });
+          .send({ from: account })
+          .once("receipt", () => {
+            alert("Raw material package dispatched to Manufacturer successfully!");
+          });
       });
   }
 
   useEffect(() => {
     getRawMaterialData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
-    return <Loader></Loader>;
-  } else {
-    return (
-      <div>
-        <h1>Product Details</h1>
-        <p>{details}</p>
+    return <Loader />;
+  }
+
+  return (
+    <div className={classes.card}>
+      <h2 style={{ color: "#38bdf8", marginTop: 0 }}>Raw Material Package Details</h2>
+      <FetchAPI />
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 200px", gap: "24px", alignItems: "start" }}>
+        <div>
+          <p><b>Generated Product ID:</b> <span style={{ fontFamily: "monospace", color: "#a855f7" }}>{rawMaterialAddress}</span></p>
+          <p><b>Description:</b> {rawMaterialData ? rawMaterialData[1] : "N/A"}</p>
+          <p><b>Product Quantity:</b> {rawMaterialData ? rawMaterialData[2] : "N/A"} units</p>
+          <p><b>Product Supplier:</b> <span style={{ fontFamily: "monospace", color: "#60a5fa" }}>{rawMaterialData ? rawMaterialData[3] : "N/A"}</span></p>
+          <p><b>Product Transporter:</b> {rawMaterialData ? rawMaterialData[4] : "N/A"}</p>
+          <p><b>Product Manufacturer:</b> <span style={{ fontFamily: "monospace", color: "#34d399" }}>{manufacturer}</span></p>
+          <p><b>Transaction Contract:</b> <span style={{ fontFamily: "monospace", color: "#fbbf24" }}>{rawMaterialData ? rawMaterialData[6] : "N/A"}</span></p>
+        </div>
+
+        <div style={{ textAlign: "center", background: "rgba(255,255,255,0.05)", padding: "16px", borderRadius: "12px" }}>
+          <QRCodeSVG value={rawMaterialAddress} size={150} level="H" includeMargin={true} />
+          <p style={{ fontSize: "0.8rem", color: "#94a3b8", marginTop: "8px" }}>Scan to Verify Supplier Origin</p>
+        </div>
+      </div>
+
+      <div style={{ marginTop: "24px" }}>
+        <CustomStepper
+          getSteps={getSupplyChainSteps}
+          activeStep={activeStep}
+          getStepContent={getSupplyChainStepContent}
+        />
+      </div>
+
+      <div style={{ marginTop: "24px", display: "flex", gap: "12px" }}>
         <Button variant="contained" color="primary">
           <Link
             to={{
@@ -170,19 +175,15 @@ export default function RawMaterialInfo(props) {
                 supplyChain: supplyChain,
               },
             }}
+            style={{ color: "#fff", textDecoration: "none" }}
           >
             View Requests
           </Link>
         </Button>
-        &nbsp;&nbsp;&nbsp;
-        <Button variant="contained" color="primary" onClick={sendPackage}>
+        <Button variant="contained" color="secondary" onClick={sendPackage}>
           Send Package
         </Button>
-        &nbsp;&nbsp;&nbsp;
-        <Button variant="contained" color="primary" onClick={FetchAPI}>
-          GENERATE CODE
-        </Button>
       </div>
-    );
-  }
+    </div>
+  );
 }

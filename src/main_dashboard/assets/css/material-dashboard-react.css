@@ -62,10 +62,10 @@ html * {
   -moz-osx-font-smoothing: grayscale;
 }
 body {
-  background-color: #eeeeee;
-  color: #3c4858;
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
   margin: 0;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', Roboto, Helvetica, Arial, sans-serif;
   font-weight: 300;
   line-height: 1.5em;
 }
@@ -112,8 +112,8 @@ h6 {
 }
 
 body {
-  background-color: #eeeeee;
-  color: #3c4858;
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
 }
 
 blockquote p {

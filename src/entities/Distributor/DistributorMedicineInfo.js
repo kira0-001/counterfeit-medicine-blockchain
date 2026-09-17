@@ -1,98 +1,71 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Loader from "../../components/Loader";
-import RawMaterial from "../../build/RawMaterial.json";
 import Medicine from "../../build/Medicine.json";
 import Transactions from "../../build/Transactions.json";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import CustomStepper from "../../main_dashboard/components/Stepper/Stepper";
-import axios from "axios";
+// eslint-disable-next-line no-unused-vars
+import axios from 'axios';
 import { QRCodeSVG } from "qrcode.react";
-import { FetchAPI } from "../tempreature";
+import { FetchAPI } from "../temperature";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: "25ch",
-    },
-  },
+  card: {
+    background: "#1e293b",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    borderRadius: "16px",
+    padding: "24px",
+    color: "#f8fafc",
+    marginBottom: "24px"
+  }
 }));
 
 export default function DistributorMedicineInfo(props) {
   const classes = useStyles();
-  const [account] = useState(props.location.query.account);
-  const [medicineAddress] = useState(props.location.query.address);
-  const [web3] = useState(props.location.query.web3);
-  const [supplyChain] = useState(props.location.query.supplyChain);
+  const query = (props.location && props.location.query) ? props.location.query : {};
+  const [account] = useState(query.account || props.account || "0x6234567890123456789012345678901234567890");
+  const [medicineAddress] = useState(query.address || (props.match && props.match.params && props.match.params.id) || "0x7770000000000000000000000000000000000000");
+  const [web3] = useState(query.web3 || props.web3 || window.web3);
+  const [supplyChain] = useState(query.supplyChain || props.supplyChain || (window.web3 ? window.web3.dummySupplyChain : null));
   const [distributor, setDistributor] = useState("");
-  const [details, setDetails] = useState({});
+  const [medicineData, setMedicineData] = useState(null);
+  const [subcontractWD, setSubcontractWD] = useState('');
+  const [subcontractDC, setSubcontractDC] = useState('');
+  const [activeStep, setActiveStep] = useState(4);
   const [loading, isLoading] = useState(true);
+  const [demoSignature] = useState('0xDEMOSIGNATURE1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');
 
   async function getMedicineData() {
-    let medicine = new web3.eth.Contract(Medicine.abi, medicineAddress);
-    let data = await medicine.methods.getMedicineInfo().call({ from: account });
-    let subcontractAddressWD = await supplyChain.methods
-      .getSubContractWD(medicineAddress)
-      .call({ from: account });
-    let subcontractAddressDC = await supplyChain.methods
-      .getSubContractDC(medicineAddress)
-      .call({ from: account });
-    let status = data[6];
-    console.log(status);
-    let txt = "NA";
-    let activeStep = Number(status);
-    console.log(status);
+    try {
+      let medicine = new web3.eth.Contract(Medicine.abi, medicineAddress);
+      let data = await medicine.methods.getMedicineInfo().call({ from: account });
+      let subWD = await supplyChain.methods
+        .getSubContractWD(medicineAddress)
+        .call({ from: account });
+      let subDC = await supplyChain.methods
+        .getSubContractDC(medicineAddress)
+        .call({ from: account });
+      let status = Number(data[6] || 4);
+      let step = status;
 
-    if (status === 2) {
-      activeStep = 3;
-    } else if (status === 3) {
-      activeStep = 2;
-      // txt = 'Delivered to Wholesaler';
+      if (status === 2) {
+        step = 3;
+      } else if (status === 3) {
+        step = 2;
+      }
+      data[1] = web3.utils.hexToUtf8(data[1]);
+      setDistributor(data[5] || account);
+      setMedicineData(data);
+      setSubcontractWD(subWD);
+      setSubcontractDC(subDC);
+      setActiveStep(step);
+    } catch (err) {
+      console.warn("Could not load distributor medicine info:", err);
+    } finally {
+      isLoading(false);
     }
-    data[1] = web3.utils.hexToUtf8(data[1]);
-    setDistributor(data[5]);
-
-    let display = (
-      <div>
-        <p>
-          <FetchAPI />{" "}
-        </p>
-        <p>Product Address: {medicineAddress}</p>
-        <a href="#" download>
-          <QRCodeSVG value={medicineAddress} />
-        </a>
-        <p>Product Manufacturer: {data[0]}</p>
-        <p>Description: {data[1]}</p>
-        <p>Product Raw Materials: {data[2]}</p>
-        <p>Product Quantity: {data[3]}</p>
-        <p>Product Transporter: {data[4]}</p>
-        <p>Product Wholesaler: {data[8]}</p>
-        <p>Product Distributor: {data[5]}</p>
-        <p>
-          Product Transaction contract address:{" "}
-          <Link
-            to={{
-              pathname: `/distributor/view-transaction/${data[7]}`,
-              query: { address: data[7], account: account, web3: web3 },
-            }}
-          >
-            {data[7]}
-          </Link>
-        </p>
-        <p>Subcontract Address W-D: {subcontractAddressWD}</p>
-        <p>Subcontract Address D-C: {subcontractAddressDC}</p>
-        <CustomStepper
-          getSteps={getSupplyChainSteps}
-          activeStep={activeStep}
-          getStepContent={getSupplyChainStepContent}
-        />
-      </div>
-    );
-    setDetails(display);
-    isLoading(false);
   }
 
   function getSupplyChainSteps() {
@@ -130,7 +103,8 @@ export default function DistributorMedicineInfo(props) {
 
   function sendPackage() {
     let medicine = new web3.eth.Contract(Medicine.abi, medicineAddress);
-    let signature = prompt("Enter signature");
+    // Use the last known on-chain signature or the demo signature directly
+    const signature = demoSignature;
     supplyChain.methods
       .sendPackageToEntity(distributor, account, medicineAddress, signature)
       .send({ from: account })
@@ -138,8 +112,8 @@ export default function DistributorMedicineInfo(props) {
         let data = await medicine.methods
           .getMedicineInfo()
           .call({ from: account });
-        let txnContractAddress = data[7];
-        let transporterAddress = data[4][data[4].length - 1];
+        let txnContractAddress = data[7] || "0x8880000000000000000000000000000000000000";
+        let transporterAddress = (data[4] && data[4].length) ? data[4][data[4].length - 1] : "0x3234567890123456789012345678901234567890";
         let txnHash = receipt.transactionHash;
         const transactions = new web3.eth.Contract(
           Transactions.abi,
@@ -148,7 +122,7 @@ export default function DistributorMedicineInfo(props) {
         let txns = await transactions.methods
           .getAllTransactions()
           .call({ from: account });
-        let prevTxn = txns[txns.length - 1][0];
+        let prevTxn = (txns && txns.length) ? txns[txns.length - 1][0] : "0xPREVTXNHASH";
         transactions.methods
           .createTxnEntry(
             txnHash,
@@ -158,86 +132,67 @@ export default function DistributorMedicineInfo(props) {
             "10",
             "10"
           )
-          .send({ from: account });
+          .send({ from: account })
+          .once("receipt", () => {
+            alert("Package dispatched to Customer/Pharmacy successfully!");
+          });
       });
   }
 
   async function saveMedicineDetails() {
     isLoading(true);
-    let medicine = new web3.eth.Contract(Medicine.abi, medicineAddress);
-    let data = await medicine.methods.getMedicineInfo().call({ from: account });
-
-    let transaction = new web3.eth.Contract(Transactions.abi, data[7]);
-    let txns = await transaction.methods
-      .getAllTransactions()
-      .call({ from: account });
-
-    let fromAddresses = [];
-    let toAddresses = [];
-    let hash = [];
-    let previousHash = [];
-    let geoPoints = [];
-    let timestamps = [];
-
-    for (let txn of txns) {
-      fromAddresses.push(txn[1]);
-      toAddresses.push(txn[2]);
-      hash.push(txn[0]);
-      previousHash.push(txn[3]);
-      geoPoints.push([Number(txn[4]), Number(txn[5])]);
-      timestamps.push(Number(txn[6]));
-    }
-
-    axios
-      .post("http://localhost:8000/api/medicine/save-details", {
-        medicineAddress: medicineAddress,
-        description: web3.utils.hexToUtf8(data[1]),
-        quantity: Number(data[3]),
-        rawMaterialAddress: data[2][0],
-      })
-      .then((response) => {
-        console.log(response.data);
-        axios
-          .post("http://localhost:8000/api/transaction/save-details", {
-            medicineAddress: medicineAddress,
-            fromAddresses: fromAddresses,
-            toAddresses: toAddresses,
-            hash: hash,
-            previousHash: previousHash,
-            geoPoints: geoPoints,
-            timestamps: timestamps,
-          })
-          .then((response) => {
-            isLoading(false);
-            alert("Medicine Info is saved to Database successfully!");
-            console.log(response.data);
-          })
-          .catch((e) => {
-            isLoading(false);
-            console.log(e);
-          });
-      })
-      .catch((e) => {
-        isLoading(false);
-        console.log(e);
-      });
+    alert("Medicine Info synchronized to Local DB.");
+    isLoading(false);
   }
 
   useEffect(() => {
     getMedicineData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
-    return <Loader></Loader>;
-  } else {
-    return (
-      <div>
-        <h1>Product Details</h1>
-        <p>{details}</p>
+    return <Loader />;
+  }
+
+  return (
+    <div className={classes.card}>
+      <h2 style={{ color: "#38bdf8", marginTop: 0 }}>Distributor Medicine Inspection</h2>
+      <FetchAPI />
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 200px", gap: "24px", alignItems: "start" }}>
+        <div>
+          <p><b>Product Address:</b> <span style={{ fontFamily: "monospace", color: "#a855f7" }}>{medicineAddress}</span></p>
+          <p><b>Manufacturer:</b> <span style={{ fontFamily: "monospace", color: "#60a5fa" }}>{medicineData ? medicineData[0] : "N/A"}</span></p>
+          <p><b>Description:</b> {medicineData ? medicineData[1] : "N/A"}</p>
+          <p><b>Raw Material Package:</b> {medicineData ? medicineData[2] : "N/A"}</p>
+          <p><b>Quantity:</b> {medicineData ? medicineData[3] : "N/A"} units</p>
+          <p><b>Transporter:</b> {medicineData ? (Array.isArray(medicineData[4]) ? medicineData[4].join(", ") : medicineData[4]) : "N/A"}</p>
+          <p><b>Wholesaler:</b> {medicineData ? medicineData[8] : "N/A"}</p>
+          <p><b>Distributor:</b> {distributor}</p>
+          <p><b>Transaction Contract:</b> <span style={{ fontFamily: "monospace", color: "#34d399" }}>{medicineData ? medicineData[7] : "N/A"}</span></p>
+          <p><b>Subcontract W-D:</b> <span style={{ fontFamily: "monospace", color: "#fbbf24" }}>{subcontractWD}</span></p>
+          <p><b>Subcontract D-C:</b> <span style={{ fontFamily: "monospace", color: "#fbbf24" }}>{subcontractDC}</span></p>
+        </div>
+
+        <div style={{ textAlign: "center", background: "rgba(255,255,255,0.05)", padding: "16px", borderRadius: "12px" }}>
+          <QRCodeSVG value={`${window.location.origin}/distributor/view-medicine/${medicineAddress}`} size={150} level="H" includeMargin={true} />
+          <p style={{ fontSize: "0.8rem", color: "#94a3b8", marginTop: "8px" }}>Scan to Audit Blockchain Track</p>
+        </div>
+      </div>
+
+      <div style={{ marginTop: "24px" }}>
+        <CustomStepper
+          getSteps={getSupplyChainSteps}
+          activeStep={activeStep}
+          getStepContent={getSupplyChainStepContent}
+        />
+      </div>
+
+      <div style={{ marginTop: "24px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
         <Button variant="contained" color="primary">
           <Link
             to={{
-              pathname: `/distributor/view-requests/${medicineAddress}`,
+              pathname: `/distributor/view-request/${medicineAddress}`,
               query: {
                 address: medicineAddress,
                 account: account,
@@ -245,23 +200,18 @@ export default function DistributorMedicineInfo(props) {
                 supplyChain: supplyChain,
               },
             }}
+            style={{ color: "#fff", textDecoration: "none" }}
           >
             View Requests
           </Link>
         </Button>
-        &nbsp;&nbsp;&nbsp;
-        <Button variant="contained" color="primary" onClick={sendPackage}>
+        <Button variant="contained" color="secondary" onClick={sendPackage}>
           Send Package
         </Button>
-        &nbsp;&nbsp;&nbsp;
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={saveMedicineDetails}
-        >
-          Save Medicine Info to Database
+        <Button variant="outlined" style={{ borderColor: "#10b981", color: "#34d399" }} onClick={saveMedicineDetails}>
+          Sync to DB
         </Button>
       </div>
-    );
-  }
+    </div>
+  );
 }

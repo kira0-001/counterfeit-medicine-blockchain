@@ -51,29 +51,18 @@ import Sidebar from "../../main_dashboard/components/Sidebar/Sidebar.js";
 import styles from "../../main_dashboard/assets/jss/material-dashboard-react/layouts/adminStyle.js";
 import bgImage from "../../main_dashboard/assets/img/sidebar-2.jpg";
 import logo from "../../main_dashboard/assets/img/reactlogo.png";
+import mainBgImage from "../../components/images/distributor.jpg";
 
-import Dashboard from "@material-ui/icons/Dashboard";
-import Person from "@material-ui/icons/Person";
-import LocationOn from "@material-ui/icons/LocationOn";
-// import AddItem from "@material-ui/icons/AddBox";
 import ViewItem from "@material-ui/icons/ViewList";
 import ViewTrans from "@material-ui/icons/Visibility";
 
-// import CreateMedicine from './CreateMedicine';
-// import RequestProduct from './RequestProduct';
 import DistributorReceiveProduct from "./DistributorReceiveProduct";
 import ViewResponses from "../Events/ViewResponses";
-// import ViewRequests from '../Events/ViewRequests';
 import RequestProductDistributor from "./RequestProduct";
 import DistributorViewReceivedMedicines from "./DistributorViewReceivedMedicines";
 import DistributorMedicineInfo from "./DistributorMedicineInfo";
-// import ViewTransactions from '../Transactions/ViewTransactions';
 import ViewRequests from "../Events/ViewRequests";
 import ViewTransactions from "../Transactions/ViewTransactions";
-
-import DistributorDashboard from "../../main_dashboard/views/Dashboard/Dashboard";
-import UserProfile from "../../main_dashboard/views/UserProfile/UserProfile";
-import Maps from "../../main_dashboard/views/Maps/Maps.js";
 
 // import routes from './ownerRoutes.js';
 
@@ -137,41 +126,48 @@ export default function Distributor({ ...rest }) {
       <Route
         exact
         path="/distributor/view-medicine/:id"
-        component={DistributorMedicineInfo}
+        render={(routeProps) => (
+          <DistributorMedicineInfo
+            account={rest.account}
+            supplyChain={rest.supplyChain}
+            web3={rest.web3}
+            {...routeProps}
+          />
+        )}
       />
       <Route
         exact
         path="/distributor/view-request/:id"
-        component={ViewRequests}
+        render={(routeProps) => (
+          <ViewRequests
+            account={rest.account}
+            supplyChain={rest.supplyChain}
+            web3={rest.web3}
+            {...routeProps}
+          />
+        )}
       />
       <Route
         exact
         path="/distributor/view-transaction/:id"
-        component={ViewTransactions}
+        render={(routeProps) => (
+          <ViewTransactions
+            account={rest.account}
+            supplyChain={rest.supplyChain}
+            web3={rest.web3}
+            {...routeProps}
+          />
+        )}
       />
-      <Redirect from="/distributor" to="/distributor/dashboard" />
+      <Redirect from="/distributor" to="/distributor/request-product" />
     </Switch>
   );
   const classes = useStyles();
   const mainPanel = React.createRef();
 
-  const [image, setImage] = React.useState(bgImage);
-  const [color, setColor] = React.useState("blue");
-  const [fixedClasses, setFixedClasses] = React.useState("dropdown show");
+  const image = bgImage;
+  const color = "blue";
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const handleImageClick = (image) => {
-    setImage(image);
-  };
-  const handleColorClick = (color) => {
-    setColor(color);
-  };
-  const handleFixedClick = () => {
-    if (fixedClasses === "dropdown") {
-      setFixedClasses("dropdown show");
-    } else {
-      setFixedClasses("dropdown");
-    }
-  };
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -197,6 +193,7 @@ export default function Distributor({ ...rest }) {
     return function cleanup() {
       if (navigator.platform.indexOf("Win") > -1) {
         ps.destroy();
+        document.body.style.overflow = "auto";
       }
       window.removeEventListener("resize", resizeFunction);
     };
@@ -214,7 +211,7 @@ export default function Distributor({ ...rest }) {
         color={color}
         {...rest}
       />
-      <div className={classes.mainPanel} ref={mainPanel}>
+      <div className={classes.mainPanel} ref={mainPanel} style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9)), url(${mainBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
         <Navbar
           routes={routes}
           handleDrawerToggle={handleDrawerToggle}

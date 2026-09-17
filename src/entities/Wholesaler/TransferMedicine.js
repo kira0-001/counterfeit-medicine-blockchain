@@ -29,12 +29,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function TransferMedicine(props) {
     const [account] = useState(props.account);
-    const [web3, setWeb3] = useState(props.web3);
+    // eslint-disable-next-line no-unused-vars
+    const [web3] = useState(props.web3);
     const [supplyChain] = useState(props.supplyChain);
-    const [loading, isLoading] = useState(false);
     const [medicineAddress, setMedicineAddress] = useState("");
     const [transporterAddress, setTransporterAddress] = useState("");
     const [distributorAddress, setDistributorAddress] = useState("");
+    const [loading, isLoading] = useState(false);
 
     const classes = useStyles();
 
@@ -53,13 +54,13 @@ export default function TransferMedicine(props) {
         isLoading(true);
         supplyChain.methods.transferMedicineWtoD(medicineAddress, transporterAddress, distributorAddress).send({ from: account })
             .once('receipt', async (receipt) => {
-                console.log(receipt);
+
                 isLoading(false);
             })
     }
 
     return (
-        <Grid container style={{ backgroundColor: "white", display: "center", alignItems: "center", maxWidth: 400, justify: "center" }}>
+        <Grid container style={{ display: "flex", flexDirection: "column", maxWidth: 560, gap: 16 }}>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
                 <div className={classes.paper}>
@@ -80,8 +81,8 @@ export default function TransferMedicine(props) {
 
                         </Grid>
                         <Button
-                            transporterAddress="submit" fullWidth variant="contained" color="primary" className={classes.submit} onClick={handleSubmit} >
-                            Submit
+                            type="submit" fullWidth variant="contained" color="primary" className={classes.submit} onClick={handleSubmit} disabled={loading} >
+                            {loading ? 'Processing...' : 'Submit'}
                         </Button>
 
                     </form>

@@ -189,10 +189,8 @@ import Sidebar from "../../main_dashboard/components/Sidebar/Sidebar.js";
 import styles from "../../main_dashboard/assets/jss/material-dashboard-react/layouts/adminStyle.js";
 import bgImage from "../../main_dashboard/assets/img/sidebar-2.jpg";
 import logo from "../../main_dashboard/assets/img/reactlogo.png";
+import mainBgImage from "../../components/images/ManufacturerBg.jpg";
 
-import Dashboard from "@material-ui/icons/Dashboard";
-import Person from "@material-ui/icons/Person";
-import LocationOn from "@material-ui/icons/LocationOn";
 import AddItem from "@material-ui/icons/AddBox";
 import ViewItem from "@material-ui/icons/ViewList";
 import ViewTrans from "@material-ui/icons/Visibility";
@@ -207,10 +205,6 @@ import RequestProductManufacturer from "./RequestProduct";
 import ViewMedicines from "./ViewMedicines";
 import MedicineInfo from "./MedicineInfo";
 import ViewTransactions from "../Transactions/ViewTransactions";
-
-import ManufacturerDashboard from "../../main_dashboard/views/Dashboard/Dashboard";
-import UserProfile from "../../main_dashboard/views/UserProfile/UserProfile";
-import Maps from "../../main_dashboard/views/Maps/Maps.js";
 
 // import routes from './ownerRoutes.js';
 
@@ -287,46 +281,60 @@ export default function Manufacturer({ ...rest }) {
       <Route
         exact
         path="/manufacturer/view-raw-material/:id"
-        component={ReceivedRawMaterial}
+        render={(routeProps) => (
+          <ReceivedRawMaterial
+            account={rest.account}
+            supplyChain={rest.supplyChain}
+            web3={rest.web3}
+            {...routeProps}
+          />
+        )}
       />
       <Route
         exact
         path="/manufacturer/view-medicine/:id"
-        component={MedicineInfo}
+        render={(routeProps) => (
+          <MedicineInfo
+            account={rest.account}
+            supplyChain={rest.supplyChain}
+            web3={rest.web3}
+            {...routeProps}
+          />
+        )}
       />
       <Route
         exact
         path="/manufacturer/view-transaction/:id"
-        component={ViewTransactions}
+        render={(routeProps) => (
+          <ViewTransactions
+            account={rest.account}
+            supplyChain={rest.supplyChain}
+            web3={rest.web3}
+            {...routeProps}
+          />
+        )}
       />
       <Route
         exact
         path="/manufacturer/view-request/:id"
-        component={ViewRequests}
+        render={(routeProps) => (
+          <ViewRequests
+            account={rest.account}
+            supplyChain={rest.supplyChain}
+            web3={rest.web3}
+            {...routeProps}
+          />
+        )}
       />
-      <Redirect from="/manufacturer" to="/manufacturer/dashboard" />
+      <Redirect from="/manufacturer" to="/manufacturer/create-medicine" />
     </Switch>
   );
   const classes = useStyles();
   const mainPanel = React.createRef();
 
-  const [image, setImage] = React.useState(bgImage);
-  const [color, setColor] = React.useState("blue");
-  const [fixedClasses, setFixedClasses] = React.useState("dropdown show");
+  const image = bgImage;
+  const color = "blue";
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const handleImageClick = (image) => {
-    setImage(image);
-  };
-  const handleColorClick = (color) => {
-    setColor(color);
-  };
-  const handleFixedClick = () => {
-    if (fixedClasses === "dropdown") {
-      setFixedClasses("dropdown show");
-    } else {
-      setFixedClasses("dropdown");
-    }
-  };
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -352,6 +360,7 @@ export default function Manufacturer({ ...rest }) {
     return function cleanup() {
       if (navigator.platform.indexOf("Win") > -1) {
         ps.destroy();
+        document.body.style.overflow = "auto";
       }
       window.removeEventListener("resize", resizeFunction);
     };
@@ -369,7 +378,7 @@ export default function Manufacturer({ ...rest }) {
         color={color}
         {...rest}
       />
-      <div className={classes.mainPanel} ref={mainPanel}>
+      <div className={classes.mainPanel} ref={mainPanel} style={{ backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9)), url(${mainBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
         <Navbar
           routes={routes}
           handleDrawerToggle={handleDrawerToggle}

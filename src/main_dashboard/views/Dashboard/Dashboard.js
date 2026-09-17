@@ -1,42 +1,23 @@
 import React from "react";
-// react plugin for creating charts
-import ChartistGraph from "react-chartist";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
-import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
-import Store from "@material-ui/icons/Store";
-import Warning from "@material-ui/icons/Warning";
-import DateRange from "@material-ui/icons/DateRange";
-import LocalOffer from "@material-ui/icons/LocalOffer";
-import Update from "@material-ui/icons/Update";
-import ArrowUpward from "@material-ui/icons/ArrowUpward";
+import LocalPharmacyIcon from "@material-ui/icons/LocalPharmacy";
+import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
+import LocalShippingIcon from "@material-ui/icons/LocalShipping";
+import SecurityIcon from "@material-ui/icons/Security";
 import AccessTime from "@material-ui/icons/AccessTime";
-import Accessibility from "@material-ui/icons/Accessibility";
-import BugReport from "@material-ui/icons/BugReport";
-import Code from "@material-ui/icons/Code";
-import Cloud from "@material-ui/icons/Cloud";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import TrendingUp from "@material-ui/icons/TrendingUp";
 // core components
 import GridItem from '../../components/Grid/GridItem.js';
 import GridContainer from "../../components/Grid/GridContainer.js";
 import Table from "../../components/Table/Table.js";
-import Tasks from "../../components/Tasks/Tasks.js";
-import CustomTabs from "../../components/CustomTabs/CustomTabs.js";
-import Danger from "../../components/Typography/Danger.js";
 import Card from "../../components/Card/Card.js";
 import CardHeader from "../../components/Card/CardHeader.js";
 import CardIcon from "../../components/Card/CardIcon.js";
 import CardBody from "../../components/Card/CardBody.js";
 import CardFooter from "../../components/Card/CardFooter.js";
-
-
-import { bugs, website, server } from "../../variables/general.js";
-
-import {
-  dailySalesChart,
-  emailsSubscriptionChart,
-  completedTasksChart
-} from "../../variables/charts.js";
 
 import styles from "../../assets/jss/material-dashboard-react/views/dashboardStyle.js";
 
@@ -46,60 +27,21 @@ export default function Dashboard() {
   const classes = useStyles();
   return (
     <div>
+      {/* Key Metrics Row */}
       <GridContainer>
-        <GridItem xs={12} sm={6} md={3}>
-          <Card>
-            <CardHeader color="warning" stats icon>
-              <CardIcon color="warning">
-                <Icon>content_copy</Icon>
-              </CardIcon>
-              <p className={classes.cardCategory}>Used Space</p>
-              <h3 className={classes.cardTitle}>
-                49/50 <small>GB</small>
-              </h3>
-            </CardHeader>
-            <CardFooter stats>
-              <div className={classes.stats}>
-                <Danger>
-                  <Warning />
-                </Danger>
-                <a href="#pablo" onClick={e => e.preventDefault()}>
-                  Get more space
-                </a>
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
         <GridItem xs={12} sm={6} md={3}>
           <Card>
             <CardHeader color="success" stats icon>
               <CardIcon color="success">
-                <Store />
+                <LocalPharmacyIcon />
               </CardIcon>
-              <p className={classes.cardCategory}>Revenue</p>
-              <h3 className={classes.cardTitle}>$34,245</h3>
+              <p className={classes.cardCategory}>Verified Drug Batches</p>
+              <h3 className={classes.cardTitle}>27</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
-                <DateRange />
-                Last 24 Hours
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={6} md={3}>
-          <Card>
-            <CardHeader color="danger" stats icon>
-              <CardIcon color="danger">
-                <Icon>info_outline</Icon>
-              </CardIcon>
-              <p className={classes.cardCategory}>Fixed Issues</p>
-              <h3 className={classes.cardTitle}>75</h3>
-            </CardHeader>
-            <CardFooter stats>
-              <div className={classes.stats}>
-                <LocalOffer />
-                Tracked from Github
+                <CheckCircleIcon style={{ color: '#4ade80', fontSize: 16 }} />
+                All batches blockchain-verified
               </div>
             </CardFooter>
           </Card>
@@ -108,155 +50,147 @@ export default function Dashboard() {
           <Card>
             <CardHeader color="info" stats icon>
               <CardIcon color="info">
-                <Accessibility />
+                <LocalShippingIcon />
               </CardIcon>
-              <p className={classes.cardCategory}>Followers</p>
-              <h3 className={classes.cardTitle}>+245</h3>
+              <p className={classes.cardCategory}>Active Shipments</p>
+              <h3 className={classes.cardTitle}>8</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
-                <Update />
-                Just Updated
+                <AccessTime />
+                IoT Cold-Chain: 4.1 °C Avg.
+              </div>
+            </CardFooter>
+          </Card>
+        </GridItem>
+        <GridItem xs={12} sm={6} md={3}>
+          <Card>
+            <CardHeader color="warning" stats icon>
+              <CardIcon color="warning">
+                <VerifiedUserIcon />
+              </CardIcon>
+              <p className={classes.cardCategory}>Signatures Verified</p>
+              <h3 className={classes.cardTitle}>142</h3>
+            </CardHeader>
+            <CardFooter stats>
+              <div className={classes.stats}>
+                <TrendingUp style={{ color: '#fbbf24', fontSize: 16 }} />
+                ECDSA on-chain verifications
+              </div>
+            </CardFooter>
+          </Card>
+        </GridItem>
+        <GridItem xs={12} sm={6} md={3}>
+          <Card>
+            <CardHeader color="danger" stats icon>
+              <CardIcon color="danger">
+                <SecurityIcon />
+              </CardIcon>
+              <p className={classes.cardCategory}>Counterfeit Flags</p>
+              <h3 className={classes.cardTitle}>0</h3>
+            </CardHeader>
+            <CardFooter stats>
+              <div className={classes.stats}>
+                <CheckCircleIcon style={{ color: '#4ade80', fontSize: 16 }} />
+                Supply chain is clean
               </div>
             </CardFooter>
           </Card>
         </GridItem>
       </GridContainer>
+
+      {/* Supply Chain Nodes & Recent Activity */}
       <GridContainer>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card chart>
-            <CardHeader color="success">
-              <ChartistGraph
-                className="ct-chart"
-                data={dailySalesChart.data}
-                type="Line"
-                options={dailySalesChart.options}
-                listener={dailySalesChart.animation}
-              />
+        {/* Supply Chain Nodes Status */}
+        <GridItem xs={12} sm={12} md={5}>
+          <Card>
+            <CardHeader color="primary">
+              <h4 className={classes.cardTitleWhite}>Supply Chain Node Status</h4>
+              <p className={classes.cardCategoryWhite}>Live health of all 5 blockchain entities</p>
             </CardHeader>
             <CardBody>
-              <h4 className={classes.cardTitle}>Daily Sales</h4>
-              <p className={classes.cardCategory}>
-                <span className={classes.successText}>
-                  <ArrowUpward className={classes.upArrowCardCategory} /> 55%
-                </span>{" "}
-                increase in today sales.
-              </p>
-            </CardBody>
-            <CardFooter chart>
-              <div className={classes.stats}>
-                <AccessTime /> updated 4 minutes ago
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card chart>
-            <CardHeader color="warning">
-              <ChartistGraph
-                className="ct-chart"
-                data={emailsSubscriptionChart.data}
-                type="Bar"
-                options={emailsSubscriptionChart.options}
-                responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                listener={emailsSubscriptionChart.animation}
+              <Table
+                tableHeaderColor="primary"
+                tableHead={["Role", "Entity", "Status", "Last Tx"]}
+                tableData={[
+                  ["Supplier", "Global Chemicals Ltd.", <span style={{ color: '#4ade80', fontWeight: 600 }}>✓ Online</span>, "12:30"],
+                  ["Transporter", "FastTrack Logistics", <span style={{ color: '#4ade80', fontWeight: 600 }}>✓ Active</span>, "12:22"],
+                  ["Manufacturer", "MediLife Labs", <span style={{ color: '#4ade80', fontWeight: 600 }}>✓ Online</span>, "11:58"],
+                  ["Wholesaler", "EuroPharma Wholesale", <span style={{ color: '#4ade80', fontWeight: 600 }}>✓ Online</span>, "11:45"],
+                  ["Distributor", "City Health Distr.", <span style={{ color: '#4ade80', fontWeight: 600 }}>✓ Online</span>, "11:30"],
+                ]}
               />
-            </CardHeader>
-            <CardBody>
-              <h4 className={classes.cardTitle}>Email Subscriptions</h4>
-              <p className={classes.cardCategory}>Last Campaign Performance</p>
             </CardBody>
-            <CardFooter chart>
-              <div className={classes.stats}>
-                <AccessTime /> campaign sent 2 days ago
-              </div>
-            </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card chart>
-            <CardHeader color="danger">
-              <ChartistGraph
-                className="ct-chart"
-                data={completedTasksChart.data}
-                type="Line"
-                options={completedTasksChart.options}
-                listener={completedTasksChart.animation}
-              />
-            </CardHeader>
-            <CardBody>
-              <h4 className={classes.cardTitle}>Completed Tasks</h4>
-              <p className={classes.cardCategory}>Last Campaign Performance</p>
-            </CardBody>
-            <CardFooter chart>
-              <div className={classes.stats}>
-                <AccessTime /> campaign sent 2 days ago
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-      </GridContainer>
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={6}>
-          <CustomTabs
-            title="Tasks:"
-            headerColor="primary"
-            tabs={[
-              {
-                tabName: "Bugs",
-                tabIcon: BugReport,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[ 0, 3 ]}
-                    tasksIndexes={[ 0, 1, 2, 3 ]}
-                    tasks={bugs}
-                  />
-                )
-              },
-              {
-                tabName: "Website",
-                tabIcon: Code,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[ 0 ]}
-                    tasksIndexes={[ 0, 1 ]}
-                    tasks={website}
-                  />
-                )
-              },
-              {
-                tabName: "Server",
-                tabIcon: Cloud,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[ 1 ]}
-                    tasksIndexes={[ 0, 1, 2 ]}
-                    tasks={server}
-                  />
-                )
-              }
-            ]}
-          />
-        </GridItem>
-        <GridItem xs={12} sm={12} md={6}>
+
+        {/* Recent Medicine Batches */}
+        <GridItem xs={12} sm={12} md={7}>
           <Card>
             <CardHeader color="warning">
-              <h4 className={classes.cardTitleWhite}>Employees Stats</h4>
-              <p className={classes.cardCategoryWhite}>
-                New employees on 15th September, 2016
-              </p>
+              <h4 className={classes.cardTitleWhite}>Recent Medicine Batches On-Chain</h4>
+              <p className={classes.cardCategoryWhite}>Last 3 verified pharmaceutical packages</p>
             </CardHeader>
             <CardBody>
               <Table
                 tableHeaderColor="warning"
-                tableHead={[ "ID", "Name", "Salary", "Country" ]}
+                tableHead={["Batch #", "Medicine", "Quantity", "IoT Temp", "Status"]}
                 tableData={[
-                  [ "1", "Dakota Rice", "$36,738", "Niger" ],
-                  [ "2", "Minerva Hooper", "$23,789", "Curaçao" ],
-                  [ "3", "Sage Rodriguez", "$56,142", "Netherlands" ],
-                  [ "4", "Philip Chaney", "$38,735", "Korea, South" ]
+                  [
+                    "#MED-X9",
+                    "Paracetamol 500mg",
+                    "10,000 boxes",
+                    <span style={{ color: '#38bdf8' }}>4.2 °C ✓</span>,
+                    <span style={{ color: '#4ade80', background: 'rgba(74,222,128,0.1)', padding: '2px 8px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 600 }}>Verified</span>
+                  ],
+                  [
+                    "#AMX-9942",
+                    "Amoxicillin 250mg",
+                    "5,000 packs",
+                    <span style={{ color: '#38bdf8' }}>3.9 °C ✓</span>,
+                    <span style={{ color: '#4ade80', background: 'rgba(74,222,128,0.1)', padding: '2px 8px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 600 }}>Verified</span>
+                  ],
+                  [
+                    "#INS-5501",
+                    "Insulin Glargine 100IU",
+                    "2,500 vials",
+                    <span style={{ color: '#38bdf8' }}>2.5 °C ✓</span>,
+                    <span style={{ color: '#4ade80', background: 'rgba(74,222,128,0.1)', padding: '2px 8px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 600 }}>Verified</span>
+                  ],
                 ]}
               />
+            </CardBody>
+          </Card>
+        </GridItem>
+      </GridContainer>
+
+      {/* Network Stats */}
+      <GridContainer>
+        <GridItem xs={12}>
+          <Card style={{ background: 'linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.95) 100%)', border: '1px solid rgba(59,130,246,0.2)' }}>
+            <CardBody>
+              <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '24px', padding: '16px 0' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginBottom: '4px' }}>Network</div>
+                  <div style={{ color: '#60a5fa', fontWeight: 700, fontSize: '1.1rem' }}>Ethereum Sepolia</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginBottom: '4px' }}>Contract Status</div>
+                  <div style={{ color: '#4ade80', fontWeight: 700, fontSize: '1.1rem' }}>✓ Demo Mode Active</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginBottom: '4px' }}>Smart Contracts</div>
+                  <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1.1rem' }}>SupplyChain + Medicine + Txn</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginBottom: '4px' }}>Auth Method</div>
+                  <div style={{ color: '#a855f7', fontWeight: 700, fontSize: '1.1rem' }}>ECDSA Signatures</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginBottom: '4px' }}>Cold-Chain Monitoring</div>
+                  <div style={{ color: '#38bdf8', fontWeight: 700, fontSize: '1.1rem' }}>ThingSpeak IoT API</div>
+                </div>
+              </div>
             </CardBody>
           </Card>
         </GridItem>
