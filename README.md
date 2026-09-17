@@ -124,7 +124,7 @@ src/
 
 ## 👨‍💻 Built By
 
-**Developed by [@kira0-001](https://github.com/kira0-001)**
+**Built by Karthikeyan M** — [@kira0-001](https://github.com/kira0-001)
 
 This project demonstrates the intersection of **Blockchain Security**, **IoT Integration**, and **Modern React Frontend Development** for solving a critical real-world healthcare problem.
 ---
