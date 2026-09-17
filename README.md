@@ -123,8 +123,10 @@ src/
 ---
 
 ## 👨‍💻 Built By
-This project demonstrates the intersection of **Blockchain Security**, **IoT Integration**, and **Modern React Frontend Development** for solving a critical real-world healthcare problem.
 
+**Developed by [@kira0-001](https://github.com/kira0-001)**
+
+This project demonstrates the intersection of **Blockchain Security**, **IoT Integration**, and **Modern React Frontend Development** for solving a critical real-world healthcare problem.
 ---
 
 > **📌 Note:** This is a demonstration/portfolio project. For production deployment, smart contracts should be audited and deployed to a public testnet (Sepolia) or mainnet.
